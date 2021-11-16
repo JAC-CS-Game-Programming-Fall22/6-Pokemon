@@ -31,22 +31,37 @@ import {
 	timer,
 } from "./globals.js";
 
-// Fetch the asset definitions from config.json.
-const {
-	images: imageDefinitions,
-	fonts: fontDefinitions,
-	// @ts-ignore
-} = await fetch('./config/assets.json').then((response) => response.json());
+let imageDefinitions, fontDefinitions, mapDefinition;
 
-// @ts-ignore
-const mapDefinition = await fetch('./config/map.json').then((response) => response.json());
+const assets = fetch('./config/assets.json')
+	.then((response) => response.json())
+	.then((response) => {
+		imageDefinitions = response.images;
+		fontDefinitions = response.fonts;
+	});
 
-// Load all the assets from their definitions.
-images.load(imageDefinitions);
-fonts.load(fontDefinitions);
+const map = fetch('./config/map.json')
+	.then((response) => response.json())
+	.then((response) => {
+		mapDefinition = response;
+	});
 
-// Add all the states to the state machine.
-stateStack.push(new PlayState(mapDefinition));
+Promise.all([assets, map])
+	.then(() => {
+		// Load all the assets from their definitions.
+		images.load(imageDefinitions);
+		fonts.load(fontDefinitions);
+
+		// Add all the states to the state machine.
+		stateStack.push(new PlayState(mapDefinition));
+
+		const game = new Game(stateStack, context, timer, canvas.width, canvas.height);
+
+		game.start();
+
+		// Focus the canvas so that the player doesn't have to click on it.
+		canvas.focus();
+	});
 
 // Add event listeners for player input.
 canvas.addEventListener('keydown', event => {
@@ -56,10 +71,3 @@ canvas.addEventListener('keydown', event => {
 canvas.addEventListener('keyup', event => {
 	keys[event.key] = false;
 });
-
-const game = new Game(stateStack, context, timer, canvas.width, canvas.height);
-
-game.start();
-
-// Focus the canvas so that the player doesn't have to click on it.
-canvas.focus();
