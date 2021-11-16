@@ -69,10 +69,6 @@
 	],
 	"fonts": [
 		{
-			"name": "Joystix",
-			"path": "./assets/fonts/Joystix.ttf"
-		},
-		{
 			"name": "PowerRed",
 			"path": "./assets/fonts/PowerRed.ttf"
 		},
@@ -86,6 +82,6 @@
 		}
 	],
 	"sounds": [
-		
+
 	]
 }
