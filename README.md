@@ -1,6 +1,6 @@
 # ⚡ Pokémon
 
-You can view the pretty version of the notes [here](https://jac-cs-game-programming-f21.github.io/Notes/#/7-Pokemon/).
+You can view the pretty version of the notes [here](https://jac-cs-game-programming-fall22.github.io/Notes/#/6-Pokemon/).
 
 ## 🎯 Objectives
 
@@ -17,21 +17,17 @@ This proof of concept demonstrates basic GUI usage, random encounters, and Poké
 
 ## 🔨 Setup
 
-1. Clone the repo (or download the zip) for today's lecture, which you can find [here](https://github.com/JAC-CS-Game-Programming-F21/6-Angry-Birds).
+1. Clone the repo (or download the zip) for today's lecture, which you can find [here](https://github.com/JAC-CS-Game-Programming-Fall22/6-Pokemon).
 2. Open the repo in Visual Studio Code.
-3. Instead of running a server manually and having to refresh the browser tab every time you want to see your changes, you can install Visual Studio Code's "Live Server" extension and have it all be taken care of for you:
+3. Start Visual Studio Code's "Live Server" extension. If you don't have it installed:
    1. Click on the extensions icons in the left-hand side navigation.
    2. Search for "Live Server".
    3. Click install next to the extension by "Ritwick Dey". You may have to reload the window.
 
       ![Live Server](./images/Live-Server.png)
 
-   4. Once it's installed, click "Go Live" on the bottom right of the window. This should start the server and automatically open a new tab in your browser at `http://127.0.0.1:5500/` (or whatever URL/port it says in VSC).
+   4. Once it's installed, click "Go Live" on the bottom right of the window. This should start the server and automatically open a new tab in your browser at `http://127.0.0.1:5500/` (or whatever port it says on your machine).
       - The files the server serves will be relative to the directory you had open in VSC when you hit "Go Live".
-
-4. Alternatively, you can run the server manually without installing "Live Server":
-   1. Open the VSC terminal (`` CTRL + ` ``) and run `npx http-server` (assuming you have NodeJS installed, if you don't, [download and install it from here](https://nodejs.org)) inside the root folder of the repo.
-   2. In your browser, navigate to `http://localhost:8080` (or whatever the URL is that is displayed in the terminal).
 
 ## 🌅 Pokémon-0 (The "Day-0" Update)
 
@@ -338,11 +334,11 @@ This is by no means necessary, but if you're curious as to how a Pokémon's stat
 
 - `./config/pokemon.json`: A collection of names and stats, which makes it trivial for a non-programmer to create additional Pokémon and help out in the overall design of the game.
 - `./src/services/PokemonFactory.js`: The configuration data is loaded into the factory such that we can use the `createInstance()` method to spit out any Pokémon we want.
+- `./src/enums/PokemonName.js`: To reference the Pokémon by something sturdier than just a string. You'll see that it's empty; we're actually dynamically creating these enums inside `PokemonFactory::load()`.
 - `./src/entities/Pokemon.js`: The box of numbers that constitutes a Pokémon. Honestly, look inside, they really are just a bunch of numbers! Later they'll have couple of sprites associated with them but that's about it. It's remarkable they've been able to create one of the most successful game franchises around this!
 - `./src/user-interface/PokemonStatsPanel.js`: Extends the `Panel` UI element to display the stats of the Pokémon.
 - `./src/states/game/PokemonStatsState.js`: Instantiates a `PokemonStatsPanel` to display to the player.
 - `./src/entities/Player::initializeParty()`: Uses the `PokemonFactory` to populate the player's party with one Pokémon.
-- `./src/enums/PokemonName.js`: To reference the Pokémon by something sturdier than just a string.
 
 ## 🥊 Pokémon-4 (The "Battle" Update)
 
@@ -377,7 +373,7 @@ Many of our states will be written in this way so that we can support asynchrono
 - `./src/states/player/PlayerWalkingState.js`:
   - `PlayerWalkingState::ENCOUNTER_CHANCE`: Used to determine if we go into battle or not when walking over grass tiles.
   - `PlayerWalkingState::checkForEncounter(x, y)`: Checks if we're currently walking on a grass tile, and if so, randomly starts a battle 10% of the time.
-  - `PlayerWalkingState::startEncounter(x, y)`: Pushes a new instance of `BattleState` onto the stack. We pass the player instance to the new `BattleState` as well as a new instance of `Opponenet` which is just a stripped down version of the `Player` class.
+  - `PlayerWalkingState::startEncounter(x, y)`: Pushes a new instance of `BattleState` onto the stack. We pass the player instance to the new `BattleState` as well as a new instance of `Opponent` which is just a stripped down version of the `Player` class.
 
 ![Fake Battle](./images/Fake-Battle.gif)
 
@@ -405,8 +401,8 @@ There's only one new file for this update: `./src/states/game/BattleTurnState.js
   - Drops the player's sprite from the screen, and pushes a `BattleMessageState` to let the player know they've fainted. Then, it pops twice to go back to the `PlayState`.
 - `BattleTurnState::processVictory()`:
   - Drops the enemy sprite from the screen and pushes a `BattleMessageState` to let the player know they've won. Then, it pops twice to back to the `PlayState`.
-
-- `PlayState::healParty()`: If the player lost the last battle, their Pokémon will be healed to full health. A `DialogueState` will be pushed to let the player know their Pokémon has been healed.
+- `PlayState::healParty()`:
+  - If the player lost the last battle, their Pokémon will be healed to full health. A `DialogueState` will be pushed to let the player know their Pokémon has been healed.
 
 ![Pokemon Healed](./images/Pokemon-Healed.gif)
 
@@ -426,17 +422,16 @@ Our implementation will be a simplified version of the above since we don't have
 
 There are a few new additions to the `Pokemon` class to implement an experience system.
 
+- `Pokemon::experienceFromLevel(level)`: Uses the [_medium fast_ leveling formula](https://bulbapedia.bulbagarden.net/wiki/Experience#Experience_at_each_level) to determine how much experience is required to reach the provided `level`.
 - `Pokemon::constructor()`: Three new fields have been added for experience:
-  - `targetExperience`: How much experience the Pokémon needs to level up.
-  - `currentExperience`: How much experience the Pokémon currently has.
   - `levelExperience`: How much experience it took to get to the Pokémon's current level. This is used to calculate the experience delta that the experience gauge displays during battle.
-- `Pokemon::experienceFromLevel(level)`: Uses the [_medium fast_ leveling formula](https://bulbapedia.bulbagarden.net/wiki/Experience#Experience_at_each_level) to determine how much experience is required to reach the passed in `level`.
+    - Example: It takes `experienceFromLevel(3) === 27` experience to get a Pokémon to level 3.
+  - `currentExperience`: How much experience the Pokémon currently has.
+    - Example: A level 3 Pokémon has at least `experienceFromLevel(3) === 27` experience. If they then defeat a Pokémon in battle and gain 10 experience, they will have a total of 37 current experience.
+  - `targetExperience`: How much experience the Pokémon needs to level up.
+    - Example: A level 3 Pokémon needs `experienceFromLevel(3 + 1) === 64` experience to level up.
 - `Pokemon::levelUp()`: Increments the Pokémon's level, calculates new `levelExperience` and `targetExperience` values, and increases the stats of the Pokémon.
-- `Pokemon::calculateExperienceToAward(opponent)`: Once an opponent is defeated, this function calculates the amount of experience the Pokémon will receive based on [this simplified gain formula](https://bulbapedia.bulbagarden.net/wiki/Experience#Gain_formula).
-
-Next, `BattlePanel` is now `Battle/PlayerPanel` and `Battle/OpponentPanel` since now we have to display different information in the `BattleState` depending on the player's Pokémon and the opponent's Pokémon.
-
-- `Pokemon::getHealthMeter()`: Gets the string that represents the Pokémon's current health.
+- `Pokemon::calculateExperienceToAward(opponent)`: Once an opponent Pokémon is defeated, this function calculates the amount of experience the player Pokémon will receive based on [this simplified gain formula](https://bulbapedia.bulbagarden.net/wiki/Experience#Gain_formula).
 - `Pokemon::getExperienceMeter()`: This is where we use `targetExperience`, `levelExperience`, and `currentExperience` to display the proper delta to the player so that they know now much experience their Pokémon needs to level up.
 
 `BattleTurnState` now has two additional functions to handle experience points after a victory in battle.
@@ -446,6 +441,8 @@ Next, `BattlePanel` is now `Battle/PlayerPanel` and `Battle/OpponentPanel` since
 - `BattleTurnState::processLevelUp(experience)`:
   - After the message is displayed, we check if it was enough experience to level up. If so, we call `Pokemon::levelUp()` which will handle calculating all the boosted stats for us.
   - Lastly, we display a `BattleMessageState` to the player to let them know their Pokémon leveled up.
+
+Finally, `BattlePanel` is now split into `Battle/PlayerPanel` and `Battle/OpponentPanel` since now we have to display different information in the `BattleState` depending on the player's Pokémon and the opponent's Pokémon.
 
 ## ✨ Pokémon-7 (The "Polish" Update)
 
@@ -461,8 +458,8 @@ In Pokémon-7, we add sounds, additional sprites, a `TitleScreenState`, and a `T
   - We call this state when exiting a battle in `BattleTurnState::exitBattle()`.
 - `./src/states/TitleScreenState.js`:
   - Consists of some text fields and a carousel of sprites that are displayed on the screen. There is then a fading transition to the next screen.
-  - Monitors whether the user has pressed the "enter" key (or "return" if on a Mac), and if so, pushes FadeInState onto the stack, which recall takes in a color table, duration, and callback function for when the transition is complete.
-  - Our callback function in this case takes care of cleaning up and pushing the next states onto the stack: first the `PlayState`, so that it is on the bottom of the Stack, then the `DialogueState`, so that rather than jumping head first into the game, the user can read some instructions, and lastly the FadeOutState to transition the screens nicely.
+  - Monitors whether the user has pressed the "enter" key, and if so, calls `TransitionState.fade()` which will pop the current `TitleScreenState` and push the `PlayState` halfway into the fade.
+  - On entering `PlayState`, a new `DialogueState` is pushed, so that rather than jumping head first into the game, the user can read some instructions.
 
 ![Title](./images/Title.gif)
 

@@ -161,7 +161,7 @@
 		{
 			"name": "battle-damage",
 			"path": "./assets/sounds/effects/battle-damage.ogg",
-			"size": 1,
+			"size": 2,
 			"volume": 0.2
 		},
 		{

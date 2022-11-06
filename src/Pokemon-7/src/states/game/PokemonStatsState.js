@@ -17,8 +17,9 @@ export default class PokemonStatsState extends State {
 	update(dt) {
 		this.panel.update(dt);
 
-		if (keys.Escape) {
+		if (keys.Escape || keys.Enter) {
 			keys.Escape = false;
+			keys.Enter = false;
 
 			stateStack.pop();
 		}

@@ -50,11 +50,11 @@ export default class PokemonStatsPanel extends Panel {
 	renderLabels() {
 		context.textAlign = 'left';
 		[
-			`HP:`,
-			`EXP:`,
-			`Attack:`,
-			`Defense:`,
-			`Speed:`,
+			'HP:',
+			'EXP:',
+			'Attack:',
+			'Defense:',
+			'Speed:',
 		].forEach((text, index) => context.fillText(text, 35, index * 30 + 80));
 	}
 
@@ -63,9 +63,9 @@ export default class PokemonStatsPanel extends Panel {
 		[
 			this.pokemon.getHealthMeter(),
 			this.pokemon.getExperienceMeter(),
-			`${this.pokemon.attack}`,
-			`${this.pokemon.defense}`,
-			`${this.pokemon.speed}`,
+			this.pokemon.attack,
+			this.pokemon.defense,
+			this.pokemon.speed,
 		].forEach((text, index) => context.fillText(text, this.dimensions.x - 35, index * 30 + 80));
 	}
 }

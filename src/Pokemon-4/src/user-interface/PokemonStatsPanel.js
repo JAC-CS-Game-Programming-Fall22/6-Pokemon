@@ -47,9 +47,9 @@ export default class PokemonStatsPanel extends Panel {
 		context.textAlign = 'right';
 		[
 			`${this.pokemon.currentHealth} / ${this.pokemon.health}`,
-			`${this.pokemon.attack}`,
-			`${this.pokemon.defense}`,
-			`${this.pokemon.speed}`,
+			this.pokemon.attack,
+			this.pokemon.defense,
+			this.pokemon.speed,
 		].forEach((text, index) => context.fillText(text, this.dimensions.x - 35, index * 30 + 80));
 	}
 }

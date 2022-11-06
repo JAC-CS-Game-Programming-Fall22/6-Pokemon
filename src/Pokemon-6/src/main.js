@@ -23,6 +23,8 @@ import Game from "../lib/Game.js";
 import PlayState from "./states/game/PlayState.js";
 import {
 	canvas,
+	CANVAS_HEIGHT,
+	CANVAS_WIDTH,
 	context,
 	fonts,
 	images,
@@ -32,45 +34,35 @@ import {
 	timer,
 } from "./globals.js";
 
-let imageDefinitions, fontDefinitions, mapDefinition, pokemonDefinitions;
+// Set the dimensions of the play area.
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
+canvas.setAttribute('tabindex', '1'); // Allows the canvas to receive user input.
 
-const assets = fetch('./config/assets.json')
-	.then((response) => response.json())
-	.then((response) => {
-		imageDefinitions = response.images;
-		fontDefinitions = response.fonts;
-	});
+// Now that the canvas element has been prepared, we can add it to the DOM.
+document.body.appendChild(canvas);
 
-const map = fetch('./config/map.json')
-	.then((response) => response.json())
-	.then((response) => {
-		mapDefinition = response;
-	});
+const {
+	images: imageDefinitions,
+	fonts: fontDefinitions
+} = await fetch('./config/assets.json').then((response) => response.json());
+const mapDefinition = await fetch('./config/map.json').then((response) => response.json());
+const pokemonDefinitions = await fetch('./config/pokemon.json').then((response) => response.json());
 
-const pokemon = fetch('./config/pokemon.json')
-	.then((response) => response.json())
-	.then((response) => {
-		pokemonDefinitions = response;
-	});
+// Load all the assets from their definitions.
+images.load(imageDefinitions);
+fonts.load(fontDefinitions);
+pokemonFactory.load(pokemonDefinitions);
 
-Promise.all([assets, map, pokemon])
-	.then(() => {
-		pokemonFactory.load(pokemonDefinitions);
+// Add all the states to the state machine.
+stateStack.push(new PlayState(mapDefinition));
 
-		// Load all the assets from their definitions.
-		images.load(imageDefinitions);
-		fonts.load(fontDefinitions);
+const game = new Game(stateStack, context, timer, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-		// Add all the states to the state machine.
-		stateStack.push(new PlayState(mapDefinition));
+game.start();
 
-		const game = new Game(stateStack, context, timer, canvas.width, canvas.height);
-
-		game.start();
-
-		// Focus the canvas so that the player doesn't have to click on it.
-		canvas.focus();
-	});
+// Focus the canvas so that the player doesn't have to click on it.
+canvas.focus();
 
 // Add event listeners for player input.
 canvas.addEventListener('keydown', event => {

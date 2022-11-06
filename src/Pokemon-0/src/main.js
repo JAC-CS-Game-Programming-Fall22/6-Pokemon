@@ -23,6 +23,8 @@ import Game from "../lib/Game.js";
 import PlayState from "./states/game/PlayState.js";
 import {
 	canvas,
+	CANVAS_HEIGHT,
+	CANVAS_WIDTH,
 	context,
 	images,
 	keys,
@@ -30,35 +32,25 @@ import {
 	timer,
 } from "./globals.js";
 
-let imageDefinitions, mapDefinition;
+// Set the dimensions of the play area.
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
+canvas.setAttribute('tabindex', '1'); // Allows the canvas to receive user input.
 
-const assets = fetch('./config/assets.json')
-	.then((response) => response.json())
-	.then((response) => {
-		imageDefinitions = response.images;
-	});
+// Now that the canvas element has been prepared, we can add it to the DOM.
+document.body.appendChild(canvas);
 
-const map = fetch('./config/map.json')
-	.then((response) => response.json())
-	.then((response) => {
-		mapDefinition = response;
-	});
+const {
+	images: imageDefinitions,
+} = await fetch('./config/assets.json').then((response) => response.json());
 
-Promise.all([assets, map])
-	.then(() => {
-		// Load all the assets from their definitions.
-		images.load(imageDefinitions);
+const mapDefinition = await fetch('./config/map.json').then((response) => response.json());
 
-		// Add all the states to the state machine.
-		stateMachine.add('PlayState', new PlayState(mapDefinition));
+// Load all the assets from their definitions.
+images.load(imageDefinitions);
 
-		const game = new Game(stateMachine, context, timer, canvas.width, canvas.height);
-
-		game.start();
-
-		// Focus the canvas so that the player doesn't have to click on it.
-		canvas.focus();
-	});
+// Add all the states to the state machine.
+stateMachine.add('PlayState', new PlayState(mapDefinition));
 
 // Add event listeners for player input.
 canvas.addEventListener('keydown', event => {
@@ -68,3 +60,10 @@ canvas.addEventListener('keydown', event => {
 canvas.addEventListener('keyup', event => {
 	keys[event.key] = false;
 });
+
+const game = new Game(stateMachine, context, timer, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+game.start();
+
+// Focus the canvas so that the player doesn't have to click on it.
+canvas.focus();

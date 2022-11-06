@@ -38,8 +38,6 @@ export default class BattleState extends State {
 		this.playerPokemon.prepareForBattle(Pokemon.BACK_POSITION);
 		this.opponentPokemon.prepareForBattle(Pokemon.FRONT_POSITION);
 
-		this.didBattleStart = false;
-
 		this.panel = new Panel(
 			Panel.BOTTOM_DIALOGUE.x,
 			Panel.BOTTOM_DIALOGUE.y,
@@ -62,10 +60,8 @@ export default class BattleState extends State {
 		);
 	}
 
-	update() {
-		if (!this.didBattleStart) {
-			this.triggerBattleStart();
-		}
+	enter() {
+		this.triggerBattleStart();
 	}
 
 	render() {
@@ -89,8 +85,6 @@ export default class BattleState extends State {
 	}
 
 	triggerBattleStart() {
-		this.didBattleStart = true;
-
 		timer.tween(this.opponentPokemon.position, ['x'], [Pokemon.FRONT_POSITION.end.x], 0.75, () => this.triggerStartingDialogue());
 	}
 

@@ -144,7 +144,7 @@ export default class PlayerWalkingState extends State {
 	}
 
 	/**
-	 * Starts the encounter by doing a fade transition into a new BattleState.
+	 * Starts the encounter with a new BattleState.
 	 */
 	startEncounter() {
 		stateStack.push(new BattleState(this.player, new Opponent()));

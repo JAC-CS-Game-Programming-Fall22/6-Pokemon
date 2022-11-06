@@ -1,15 +1,18 @@
 import Pokemon from "../entities/Pokemon.js";
+import PokemonName from "../enums/PokemonName.js";
 
 export default class PokemonFactory {
 	constructor(context) {
 		this.context = context;
-		this.names = [];
 		this.pokemon = {};
 	}
 
 	load(pokemonDefinitions) {
-		this.names = pokemonDefinitions.names;
-		this.pokemon = pokemonDefinitions.definitions;
+		this.pokemon = pokemonDefinitions;
+
+		Object.keys(pokemonDefinitions).forEach((name) => {
+			PokemonName[name] = name;
+		});
 	}
 
 	get(name) {
@@ -17,6 +20,6 @@ export default class PokemonFactory {
 	}
 
 	createInstance(name, level = 1) {
-		return new Pokemon(this.pokemon[name], level);
+		return new Pokemon(name, this.pokemon[name], level);
 	}
 }

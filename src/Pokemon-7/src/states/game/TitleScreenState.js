@@ -1,11 +1,8 @@
-import { getRandomPositiveInteger } from "../../../lib/RandomNumberHelpers.js";
 import State from "../../../lib/State.js";
 import Colour from "../../enums/Colour.js";
 import ImageName from "../../enums/ImageName.js";
 import PokemonName from "../../enums/PokemonName.js";
 import SoundName from "../../enums/SoundName.js";
-import Panel from "../../user-interface/elements/Panel.js";
-import DialogueState from "./DialogueState.js";
 import PlayState from "./PlayState.js";
 import TransitionState from "./TransitionState.js";
 import {
@@ -45,6 +42,11 @@ export default class TitleScreenState extends State {
 	enter() {
 		sounds.play(SoundName.Title);
 		this.revolvePokemon();
+	}
+
+	exit() {
+		sounds.stop(SoundName.Title);
+		this.timer?.clear();
 	}
 
 	update() {
@@ -137,19 +139,8 @@ export default class TitleScreenState extends State {
 
 	play() {
 		TransitionState.fade(() => {
-			this.timer.clear();
-			sounds.stop(SoundName.Title);
 			stateStack.pop();
 			stateStack.push(this.playState);
-			stateStack.push(new DialogueState(
-				`Welcome to the world of Pokémon! \n\n\
-				Press Enter to advance the text... \n\
-				To start fighting Pokémon with your own \
-				randomly assigned Pokémon, walk in the tall grass. \n\n\
-				If you need to heal, press 'P' in the field! \n\n\
-				Good luck!`,
-				Panel.TOP_DIALOGUE
-			));
 		});
 	}
 }

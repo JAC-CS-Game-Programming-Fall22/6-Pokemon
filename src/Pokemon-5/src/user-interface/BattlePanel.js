@@ -41,7 +41,7 @@ export default class BattlePanel extends Panel {
 		context.fillText(this.pokemon.name.toUpperCase(), this.position.x + 15, this.position.y + 12);
 		context.textAlign = 'right';
 		context.fillText(
-			`HP: ${Math.floor(this.pokemon.currentHealth)} / ${this.pokemon.health}`,
+			`HP: ${this.pokemon.getHealthMeter()}`,
 			this.position.x + this.dimensions.x - 30,
 			this.position.y + this.dimensions.y - 25
 		);

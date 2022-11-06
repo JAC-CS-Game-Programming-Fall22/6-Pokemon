@@ -1,7 +1,3 @@
-const PokemonName = {
-	Bulbasaur: 'bulbasaur',
-	Charmander: 'charmander',
-	Squirtle: 'squirtle',
-};
+const PokemonName = {};
 
 export default PokemonName;

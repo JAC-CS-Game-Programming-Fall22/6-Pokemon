@@ -29,10 +29,10 @@ export default class Pokemon extends GameEntity {
 	 * @param {object} definition Defined in config/pokemon.json.
 	 * @param {number} level
 	 */
-	constructor(definition, level) {
+	constructor(name, definition, level) {
 		super();
 
-		this.name = definition.name;
+		this.name = name;
 		this.level = level;
 		this.position = new Vector();
 		this.battlePosition = new Vector();
@@ -60,6 +60,12 @@ export default class Pokemon extends GameEntity {
 		this.levelExperience = this.experienceFromLevel(level);
 
 		this.initializeIndividualValues();
+
+		this.health = 0;
+		this.attack = 0;
+		this.defense = 0;
+		this.speed = 0;
+
 		this.calculateStats();
 
 		this.currentHealth = this.health;
@@ -160,7 +166,7 @@ export default class Pokemon extends GameEntity {
 	 */
 	inflictDamage(defender) {
 		const power = 40;
-		const damage = Math.max(1, Math.floor((((((2 * this.level) / 5) + 2)  * power * (this.attack / defender.defense)) / 50) + 2));
+		const damage = Math.max(1, Math.floor((((((2 * this.level) / 5) + 2) * power * (this.attack / defender.defense)) / 50) + 2));
 
 		defender.currentHealth = Math.max(0, defender.currentHealth - damage);
 	}

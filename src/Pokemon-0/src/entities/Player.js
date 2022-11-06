@@ -18,7 +18,7 @@ export default class Player extends GameEntity {
 	 * @param {object} entityDefinition
 	 * @param {Map} map
 	 */
-	constructor(entityDefinition = {}, map = new Map()) {
+	constructor(entityDefinition = {}, map) {
 		super(entityDefinition);
 
 		this.map = map;
